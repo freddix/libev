@@ -1,11 +1,11 @@
 Summary:	Event notification library
 Name:		libev
-Version:	4.15
+Version:	4.19
 Release:	1
 License:	BSD or GPL v2+
 Group:		Libraries
 Source0:	http://dist.schmorp.de/libev/%{name}-%{version}.tar.gz
-# Source0-md5:	3a73f247e790e2590c01f3492136ed31
+# Source0-md5:	01d1c672697f649b4f94abd0b70584ff
 URL:		http://software.schmorp.de/pkg/libev.html
 BuildRequires:	autoconf
 BuildRequires:	automake
@@ -29,6 +29,9 @@ Header files for libev library.
 %prep
 %setup -q
 
+# insert empty line after AM_INIT_AUTOMAKE to unbreak autoreconfig
+%{__sed} '/AM_INIT_AUTOMAKE.*/{G;}' -i configure.ac
+
 %build
 %{__libtoolize}
 %{__aclocal}
@@ -45,8 +48,10 @@ rm -rf $RPM_BUILD_ROOT
 %{__make} install \
 	DESTDIR=$RPM_BUILD_ROOT
 
+%{__rm} $RPM_BUILD_ROOT%{_libdir}/*.la
+
 # conflict with libevent
-rm -f $RPM_BUILD_ROOT%{_includedir}/event.h
+%{__rm} $RPM_BUILD_ROOT%{_includedir}/event.h
 
 %clean
 rm -rf $RPM_BUILD_ROOT
@@ -63,7 +68,6 @@ rm -rf $RPM_BUILD_ROOT
 %files devel
 %defattr(644,root,root,755)
 %attr(755,root,root) %{_libdir}/libev.so
-%{_libdir}/libev.la
 %{_includedir}/ev.h
 %{_includedir}/ev++.h
 %{_mandir}/man3/ev.3*
